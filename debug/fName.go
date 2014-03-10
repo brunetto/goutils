@@ -10,7 +10,7 @@ import (
 
 // Whoami print the name of the calling function.
 func FName(print bool) string {
-	pc, _, _, ok := runtime.Caller(1)
+	pc, _, _, ok := runtime.Caller(2)
 	if !ok {
 		return "unknown"
 	}
