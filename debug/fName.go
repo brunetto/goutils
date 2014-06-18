@@ -9,7 +9,7 @@ import (
 )
 
 // Whoami print the name of the calling function.
-func FName(print bool) string {
+func FName(printName bool) string {
 	pc, _, _, ok := runtime.Caller(2)
 	if !ok {
 		return "unknown"
@@ -18,7 +18,7 @@ func FName(print bool) string {
 	if me == nil {
 		return "unnamed"
 	}
-	if print{
+	if printName {
 		fmt.Println("###########################################")
 		fmt.Print("###\t\t\t")
 		log.Println(me.Name())

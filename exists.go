@@ -1,4 +1,4 @@
-package utils
+package goutils
 
 // From http://stackoverflow.com/a/12527546
 import (
