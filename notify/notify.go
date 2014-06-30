@@ -5,7 +5,7 @@ import (
 	"github.com/godbus/dbus"
 )
 
-func notify (title, msg string) () {
+func Notify (title, msg string) () {
 	if os.Getenv("DISPLAY") == "" {
 		log.Println("Not in graphical session, ignore notification sending and send a beep. \x07")
 	}

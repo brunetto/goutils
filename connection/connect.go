@@ -4,18 +4,18 @@ package connection
 // using password or pubkey
 
 import (
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"strings"
 	
 	"code.google.com/p/go.crypto/ssh"
 )
 
 
 // RESOURCES:
+// * https://docs.google.com/document/d/1nF2wlkIwuA4AXryOvE2p0hgQUbsyRYklKSot4ahH3Aw/edit#
+// * https://godoc.org/code.google.com/p/go.crypto/ssh
 // * https://godoc.org/code.google.com/p/go.crypto/ssh
 // * http://dave.cheney.net/tag/golang-3/page/2
 // * http://play.golang.org/p/3z513UKrOY
@@ -30,91 +30,94 @@ import (
 // ---
 
 
-func PubKeyClientConfig(usr, pathToKey string) (*ssh.ClientConfig) {
 	
+	
+func SshSessionWithKey (server, usr, pathToKey string) (*ssh.Session, error) {
 	var (
-		k *keychain
+		config *ssh.ClientConfig 
+		client *ssh.Client
 		err error
 	)
 	
+	if config, err = PubKeyClientConfig(usr, pathToKey); err != nil {
+		log.Println("Can'r create config for connection: ", err)
+		return &ssh.Session{}, err
+	}
+	
+	log.Println("Try to connect to ", server)
+	if client, err = ssh.Dial("tcp", server, config); err != nil {
+		log.Println("Failed to dial: " + err.Error())
+		return &ssh.Session{}, err
+	}
+	
+	log.Println("Start new session")
+	return client.NewSession()
+}
+	
+func SshSessionWithPw (server, usr, pw string) (*ssh.Session, error) {
+	var (
+		config *ssh.ClientConfig 
+		client *ssh.Client
+		err error
+	)
+	
+	if config, err = PwClientConfig(usr, pw); err != nil {
+		log.Println("Can'r create config for connection: ", err)
+		return &ssh.Session{}, err
+	}
+	
+	log.Println("Try to connect to ", server)
+	if client, err = ssh.Dial("tcp", server, config); err != nil {
+		log.Println("Failed to dial: " + err.Error())
+		return &ssh.Session{}, err
+	}
+	
+	log.Println("Start new session")
+	return client.NewSession()
+}	
+	
+	
+
+func PubKeyClientConfig(usr, pathToKey string) (*ssh.ClientConfig, error) {
+	
+	var (
+		buf []byte
+		key ssh.Signer
+		err error
+	)
+	
+	// Check for default key location
 	if pathToKey == "" {
 		pathToKey = filepath.Join(os.Getenv("HOME"), ".ssh/id_rsa")
 	} 
 	
-	k = &keychain{}
-	
-	// Add path to id_rsa file
-	if err = k.loadPEM(pathToKey); err != nil {
-		log.Fatal("Cannot load key: " + err.Error())
+	// Load key
+	if buf, err = ioutil.ReadFile(pathToKey); err != nil {
+		log.Printf("Can't read PEM key file in %v, error: %v\n", pathToKey, err)
+		return &ssh.ClientConfig{}, err
 	}
+	
+	if key, err = ssh.ParsePrivateKey(buf); err != nil {
+		log.Printf("Can't parse PEM key buffer to load key, error: %v\n", err)
+		return &ssh.ClientConfig{}, err
+	}	
 	
 	return &ssh.ClientConfig{
 		// Change to your username
 		User: usr,
 		Auth: []ssh.AuthMethod{
-			ssh.ClientAuthKeyring(k),
+			ssh.PublicKeys(key),
 		},
-	}
+	}, nil
 }
 
 
-func PWClientConfig(usr, pw string) (*ssh.ClientConfig) {
+func PwClientConfig(usr, pw string) (*ssh.ClientConfig, error) {
 	return &ssh.ClientConfig{
 		User: usr,
 		Auth: []ssh.AuthMethod{
-			ssh.ClientAuthPassword(password(pw)),
+// 			ssh.Password(password(pw)),
+			ssh.Password(pw),
 		},
-	}
+	}, nil
 }
-
-// All of the following is taken from 
-// http://kiyor.us/2013/12/29/golang-ssh-example/
-// Thank you!!!:)
-
-func strip(v string) string {
-	return strings.TrimSpace(strings.Trim(v, "\n"))
-}
- 
-type keychain struct {
-	keys []ssh.Signer
-}
- 
-func (k *keychain) Key(i int) (ssh.PublicKey, error) {
-	if i < 0 || i >= len(k.keys) {
-		return nil, nil
-	}
-	return k.keys[i].PublicKey(), nil
-}
- 
-func (k *keychain) Sign(i int, rand io.Reader, data []byte) (sig []byte, err error) {
-	return k.keys[i].Sign(rand, data)
-}
- 
-func (k *keychain) add(key ssh.Signer) {
-	k.keys = append(k.keys, key)
-}
- 
-func (k *keychain) loadPEM(file string) error {
-	buf, err := ioutil.ReadFile(file)
-	if err != nil {
-		return err
-	}
-	key, err := ssh.ParsePrivateKey(buf)
-	if err != nil {
-		return err
-	}
-	k.add(key)
-	return nil
-}
-
-
-
-// password implements the ClientPassword interface
-type password string
-
-func (p password) Password(user string) (string, error) {
-	return string(p), nil
-}
-
-
-
