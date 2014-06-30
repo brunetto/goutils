@@ -4,11 +4,14 @@ package connection
 // using password or pubkey
 
 import (
-	
+	"io"
+	"io/ioutil"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 	
 	"code.google.com/p/go.crypto/ssh"
-	
 )
 
 
@@ -48,7 +51,7 @@ func PubKeyClientConfig(usr, pathToKey string) (*ssh.ClientConfig) {
 	return &ssh.ClientConfig{
 		// Change to your username
 		User: usr,
-		Auth: []ssh.ClientAuth{
+		Auth: []ssh.AuthMethod{
 			ssh.ClientAuthKeyring(k),
 		},
 	}
@@ -58,7 +61,7 @@ func PubKeyClientConfig(usr, pathToKey string) (*ssh.ClientConfig) {
 func PWClientConfig(usr, pw string) (*ssh.ClientConfig) {
 	return &ssh.ClientConfig{
 		User: usr,
-		Auth: []ssh.ClientAuth{
+		Auth: []ssh.AuthMethod{
 			ssh.ClientAuthPassword(password(pw)),
 		},
 	}
