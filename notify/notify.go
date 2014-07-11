@@ -2,6 +2,7 @@ package notify
 
 import (
 	"log"
+	"os"
 	"github.com/godbus/dbus"
 )
 

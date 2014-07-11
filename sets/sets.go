@@ -11,7 +11,7 @@
 // 	fmt.Println(set.Get(2))
 // 	set.Remove(2)
 // 	fmt.Println(set.Get(2))
-package slt
+package sets
 
 import (
 	"sort"
