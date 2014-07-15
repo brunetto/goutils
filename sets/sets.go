@@ -58,7 +58,7 @@ func (set StringSet) Get(item string) (string, bool) {
 		exists bool
 		element string
 	)
-	if element, exists = set[item], exists{
+	if element, exists = set[item]; exists{
 		return element, exists //true if it existed already
 	} else {
 		return "", exists
