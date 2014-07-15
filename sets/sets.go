@@ -46,10 +46,23 @@ func (set StringSet) Add(item string) bool {
 }
 
 // Get return the element if it exists
-func (set StringSet) Get(item string) bool {
+func (set StringSet) Exists(item string) bool {
 	var exists bool
 	_, exists = set[item]
 	return exists //true if it existed already
+}
+
+// Exist return a bool indicate the existance
+func (set StringSet) Get(item string) (string, bool) {
+	var (
+		exists bool
+		element string
+	)
+	if element, exists = set[item], exists{
+		return element, exists //true if it existed already
+	} else {
+		return "", exists
+	}
 }
 
 // Remove removes an item form the set if it exists
