@@ -76,8 +76,6 @@ func SshSessionWithPw (server, usr, pw string) (*ssh.Session, error) {
 	return client.NewSession()
 }	
 	
-	
-
 func PubKeyClientConfig(usr, pathToKey string) (*ssh.ClientConfig, error) {
 	
 	var (
