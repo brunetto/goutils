@@ -9,7 +9,8 @@ import (
 	"os"
 	"path/filepath"
 	
-	"code.google.com/p/go.crypto/ssh"
+	//"code.google.com/p/go.crypto/ssh"
+	"golang.org/x/crypto/ssh"
 )
 
 
