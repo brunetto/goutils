@@ -24,5 +24,8 @@ func nPadRepeat( str, pad string, length int ) ( int ) {
 	} else {
 		repeat = (length - len(str)) / len(pad)
 	}
+	if repeat < 0 {
+		repeat = 0
+	}
 	return repeat
 }
