@@ -5,9 +5,10 @@ import (
 	ps "github.com/mitchellh/go-ps"
 	"strings"
 	"syscall"
-	"log"
 	//"os"
 	"time"
+	"errors"
+	"strconv"
 )
 
 type Processes []Process
@@ -41,7 +42,7 @@ func MonitorAndKill(processName string) error {
 	for {
 		processes, err = List()
 		if err != nil {
-			log.Fatal("Can't retrieve processes list: ", err)
+			return errors.New("Can't retrieve processes list: " + err.Error())
 		}
 		procs = processes.FindProcessByName(processName)
 		//procs.Print()
@@ -79,9 +80,9 @@ func (p *Processes) Print() {
 
 func (p *Process) Kill() error {
 	var err error
-	err = syscall.Kill(p.Process.Pid(), syscall.SIGKILL)
+	err = syscall.Kill(p.Pid(), syscall.SIGKILL)
 	//fmt.Println("killed ", p.Pid(), " with ", syscall.SIGKILL)
-	return err
+	return errors.New("Can't kill process with pid " + strconv.Itoa(p.Pid()) + ": " + err.Error())
 }
 
 func (p *Process) Pid() int {
