@@ -9,6 +9,7 @@ import (
 	"time"
 	"errors"
 	"strconv"
+	"log"
 )
 
 type Processes []Process
@@ -53,7 +54,10 @@ func MonitorAndKill(processName string) error {
 		//	fmt.Println("No process found.")
 		//	os.Exit(0)
 		case 1:
-			procs[0].Kill()
+			err = procs[0].Kill()
+			if err != nil {
+				log.Println(err)
+			}
 		}
 
 		time.Sleep(20 * time.Second)
@@ -79,10 +83,15 @@ func (p *Processes) Print() {
 }
 
 func (p *Process) Kill() error {
-	var err error
+	var (
+		err error
+		pidString string
+	)
+
+	pidString = strconv.Itoa(p.Pid())
 	err = syscall.Kill(p.Pid(), syscall.SIGKILL)
 	//fmt.Println("killed ", p.Pid(), " with ", syscall.SIGKILL)
-	return errors.New("Can't kill process with pid " + strconv.Itoa(p.Pid()) + ": " + err.Error())
+	return errors.New("Can't kill process with pid " + pidString + ": " + err.Error())
 }
 
 func (p *Process) Pid() int {
