@@ -1,23 +1,10 @@
 package conf
 
 import (
-	"io/ioutil"
-	"encoding/json"
+	"github.com/brunetto/goutils/file"
 )
 
 func LoadJsonConf (fileName string, c interface{}) error {
-	var (
-		jsonMsg []byte
-		err error
-	)
-	jsonMsg, err = ioutil.ReadFile(fileName)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(jsonMsg, c)
-	if err != nil {
-		return err
-	}
-	return nil
+	return file.LoadJsonConf(fileName, c)
 }
 
