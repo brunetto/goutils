@@ -30,9 +30,10 @@ func Ok(tb testing.TB, err error) {
 
 // NotOk fails the test if an err is  nil.
 func NotOk(tb testing.TB, err error) {
+	fmt.Println(err)
 	if err == nil {
 		_, file, line, _ := runtime.Caller(1)
-		fmt.Printf("\033[31m%s:%d: expected error, not found: %s\033[39m\n\n", filepath.Base(file), line, err.Error())
+		fmt.Printf("\033[31m%s:%d: expected error, not found!!\n\n", filepath.Base(file), line)
 		tb.FailNow()
 	}
 }
