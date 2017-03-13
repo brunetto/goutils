@@ -91,7 +91,10 @@ func (p *Process) Kill() error {
 	pidString = strconv.Itoa(p.Pid())
 	err = syscall.Kill(p.Pid(), syscall.SIGKILL)
 	//fmt.Println("killed ", p.Pid(), " with ", syscall.SIGKILL)
-	return errors.New("Can't kill process with pid " + pidString + ": " + err.Error())
+	if err != nil {
+		return errors.New("Can't kill process with pid " + pidString + ": " + err.Error())
+	}
+	return nil
 }
 
 func (p *Process) Pid() int {

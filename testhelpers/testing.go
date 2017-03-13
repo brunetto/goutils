@@ -1,4 +1,4 @@
-package testing
+package testhelpers
 
 // Forked from https://github.com/benbjohnson/testing
 
