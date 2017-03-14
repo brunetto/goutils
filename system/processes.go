@@ -3,7 +3,7 @@ package system
 import (
 	"fmt"
 	"strings"
-	"syscall"
+	syscall "golang.org/x/sys/unix"
 
 	ps "github.com/mitchellh/go-ps"
 	//"os"
@@ -11,6 +11,7 @@ import (
 	"log"
 	"strconv"
 	"time"
+	"os"
 )
 
 type Processes []Process
@@ -111,10 +112,16 @@ func (p *Process) Terminate() error {
 	var (
 		err       error
 		pidString string
+		pr *os.Process
 	)
 
 	pidString = strconv.Itoa(p.Pid())
-	err = syscall.Kill(p.Pid(), syscall.SIGTERM)
+
+	pr, err = os.FindProcess(p.Pid())
+	if err != nil {
+		return errors.New("Can't find process with pid " + pidString + ": " + err.Error())
+	}
+	err = pr.Signal(os.Interrupt)
 	if err != nil {
 		return errors.New("Can't terminate process with pid " + pidString + ": " + err.Error())
 	}
