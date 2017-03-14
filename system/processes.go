@@ -67,7 +67,7 @@ func MonitorAndKill(processName string) error {
 
 func (p *Processes) FindProcessByPid(pid int) *Process {
 	for _, proc := range *p {
-		if proc.Pid(), pid {
+		if proc.Pid() == pid {
 			return &proc
 		}
 	}
@@ -103,6 +103,20 @@ func (p *Process) Kill() error {
 	//fmt.Println("killed ", p.Pid(), " with ", syscall.SIGKILL)
 	if err != nil {
 		return errors.New("Can't kill process with pid " + pidString + ": " + err.Error())
+	}
+	return nil
+}
+
+func (p *Process) Terminate() error {
+	var (
+		err       error
+		pidString string
+	)
+
+	pidString = strconv.Itoa(p.Pid())
+	err = syscall.Kill(p.Pid(), syscall.SIGTERM)
+	if err != nil {
+		return errors.New("Can't terminate process with pid " + pidString + ": " + err.Error())
 	}
 	return nil
 }
