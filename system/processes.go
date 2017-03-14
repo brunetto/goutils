@@ -65,6 +65,15 @@ func MonitorAndKill(processName string) error {
 	}
 }
 
+func (p *Processes) FindProcessByPid(pid int) *Process {
+	for _, proc := range *p {
+		if proc.Pid(), pid {
+			return &proc
+		}
+	}
+	return nil
+}
+
 func (p *Processes) FindProcessByName(searchString string) Processes {
 	var procs Processes
 	for _, proc := range *p {
