@@ -2,14 +2,15 @@ package system
 
 import (
 	"fmt"
-	ps "github.com/mitchellh/go-ps"
 	"strings"
 	"syscall"
+
+	ps "github.com/mitchellh/go-ps"
 	//"os"
-	"time"
 	"errors"
-	"strconv"
 	"log"
+	"strconv"
+	"time"
 )
 
 type Processes []Process
@@ -84,7 +85,7 @@ func (p *Processes) Print() {
 
 func (p *Process) Kill() error {
 	var (
-		err error
+		err       error
 		pidString string
 	)
 
@@ -108,5 +109,3 @@ func (p *Process) PPid() int {
 func (p *Process) Executable() string {
 	return p.Process.Executable()
 }
-
-
