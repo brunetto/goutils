@@ -1,2 +1,0 @@
-gccgo -static -c  helloWordPro.go
-gccgo -static -o helloWordProgcc helloWordPro.o
